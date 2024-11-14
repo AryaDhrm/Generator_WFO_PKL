@@ -12,14 +12,20 @@ jadwal_Wfo_copy = {}
 
 def simpan_jadwal():
     global anak_magang, jadwal_Wfo_copy
-    
+    jadwal_Wfo_copy.clear()
+    jadwal_Wfo.clear()
+    print(f"ini adalah jadwal WFO : {jadwal_Wfo}")
+    print(f"ini adalah jadwal copy : {jadwal_Wfo_copy}")
+    attempts = 0
     input_anak_magang = input_nama.get()
     anak_prioritas = input_anak_prioritas.get()
     min_wfh = input_max.get()
     max_wfo = input_max_wfo.get()
     anak_magang = [name.strip() for name in input_anak_magang.split(",")]
-
+    magang_prioritas = [name.strip() for name in anak_prioritas.split(",")]
+    print(f"ini adalah isi dari : {magang_prioritas}")
     total_max_magang = len(anak_magang)
+    # jumlah_wfo
     
     days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
     
@@ -64,11 +70,14 @@ def simpan_jadwal():
     while any(jumlah < max_wfo_person for jumlah in jumlah_WFO.values()) and any(len(jadwal_Wfo[hari]) < max_wfo for hari in days):
         hari = days[index_hari]
         nama = anak_magang[index_anak]
-
+        
         nama_ditambah = False
         hari_sudah_diganti = False
+        attempts += 1
         # flag = False
         # print(index_anak)
+        
+        # ubah index jika nama yang dicek sudah ada pada hari tersebut
         
         if nama in jadwal_Wfo[hari]:
             if index_anak < total_magang-1:
@@ -78,19 +87,28 @@ def simpan_jadwal():
                 index_anak = 0
                 nama = anak_magang[index_anak]
             
-            # ini dirubah 
-        if  jumlah_WFO[nama] < max_wfo_person and nama not in jadwal_Wfo[hari]:
+            # ini dirubah
+        # jumlah_wfo = max_wfo_person
+        if nama in magang_prioritas:
+            jumlah_wfo = max_wfo_person
+            
+        else:
+            jumlah_wfo = max_wfo_person // 2
+
+        if  jumlah_WFO[nama] < jumlah_wfo and nama not in jadwal_Wfo[hari]:
             # ini ditambahkan
+            # mengubah hari
             if len(jadwal_Wfo[hari]) < int(max_jumlah_WFO[hari]): 
                 jadwal_Wfo[hari].append(nama)
                 jumlah_WFO[nama] += 1
+                # index_hari
             else:
                 index_hari+=1
                 hari_sudah_diganti = True
                 jadwal_Wfo[hari].append(nama)
                 jumlah_WFO[nama] += 1
             # nama_ditambah = True
-        
+       
         if index_anak < total_magang - 1:
             index_anak += 1
         else:
@@ -103,6 +121,13 @@ def simpan_jadwal():
         else:
             index_hari = 0
             
+        if attempts > 500:
+            print(f"jumlah percobaan {attempts}")
+            break
+        
+    with open("jadwal_WFO.txt", "w"):
+        pass
+    
     with open("jadwal_WFO.txt", "w") as file: 
         for day, names in jadwal_Wfo.items():
             file.write(f"{day}: {', '.join(names)}\n")
@@ -114,10 +139,12 @@ def simpan_jadwal():
         names = ', '.join(jadwal_Wfo[day])
         tree.insert("", tk.END, values=(day, names))
     
-    # print(jumlah_WFO)
+    print(f"total karyawan WFO : {jumlah_WFO}")
     # jadwal_Wfo_copy = copy.deepcopy(jadwal_Wfo)
     copy_jadwal()
-    jadwal_Wfo.clear() 
+    jadwal_Wfo.clear()
+    # print(f"ini adalah jadwal wfo {jadwal_Wfo}") 
+    # print(f"ini adalah jadwal wfo copy {jadwal_Wfo_copy}") 
     reset_input()
 
 def copy_jadwal():
@@ -135,12 +162,11 @@ def copy_jadwal():
 def reset_input():
     input_nama.delete(0, tk.END)
     input_max.delete(0, tk.END)
+    input_anak_prioritas.delete(0, tk.END)
     input_max_wfo.delete(0, tk.END)
     
 def load_jadwal():
     global jadwal_Wfo, anak_magang
-    
-    
     jadwal_Wfo.clear()
     
     try:
@@ -264,7 +290,7 @@ tk.Label(window, text ="Nama anak PKL (pisahkan dengan koma) : ").pack(pady=10)
 input_nama = tk.Entry(window, width=50)
 input_nama.pack()
 
-tk.Label(window, text ="prioritas (pisahkan dengan koma) : ").pack(pady=20)
+tk.Label(window, text ="prioritas (pisahkan dengan koma) : ").pack(pady=10)
 input_anak_prioritas = tk.Entry(window, width=50)
 input_anak_prioritas.pack()
 
