@@ -14,8 +14,8 @@ def simpan_jadwal():
     global anak_magang, jadwal_Wfo_copy
     jadwal_Wfo_copy.clear()
     jadwal_Wfo.clear()
-    print(f"ini adalah jadwal WFO : {jadwal_Wfo}")
-    print(f"ini adalah jadwal copy : {jadwal_Wfo_copy}")
+    # print(f"ini adalah jadwal WFO : {jadwal_Wfo}")
+    # print(f"ini adalah jadwal copy : {jadwal_Wfo_copy}")
     attempts = 0
     input_anak_magang = input_nama.get()
     anak_prioritas = input_anak_prioritas.get()
@@ -23,13 +23,18 @@ def simpan_jadwal():
     max_wfo = input_max_wfo.get()
     anak_magang = [name.strip() for name in input_anak_magang.split(",")]
     magang_prioritas = [name.strip() for name in anak_prioritas.split(",")]
-    print(f"ini adalah isi dari : {magang_prioritas}")
+    # print(f"ini adalah isi dari : {magang_prioritas}")
     total_max_magang = len(anak_magang)
     # jumlah_wfo
     
     days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
-    
-   
+    if anak_prioritas:
+        for name in magang_prioritas:
+            if name not in anak_magang:
+                messagebox.showerror("Input Error", f"Nama prioritas '{name}' harus ada pada input nama anak PKL.")
+                return
+
+            
     if not max_wfo.isdigit() or int(max_wfo) < 1:
         messagebox.showerror("Input Error", "Masukkan batas WFO yang valid (lebih dari 0).")
         return
@@ -87,7 +92,7 @@ def simpan_jadwal():
                 index_anak = 0
                 nama = anak_magang[index_anak]
             
-            # ini dirubah
+        # ini dirubah
         # jumlah_wfo = max_wfo_person
         if nama in magang_prioritas:
             jumlah_wfo = max_wfo_person
@@ -122,7 +127,7 @@ def simpan_jadwal():
             index_hari = 0
             
         if attempts > 500:
-            print(f"jumlah percobaan {attempts}")
+            # print(f"jumlah percobaan {attempts}")
             break
         
     with open("jadwal_WFO.txt", "w"):
@@ -139,7 +144,7 @@ def simpan_jadwal():
         names = ', '.join(jadwal_Wfo[day])
         tree.insert("", tk.END, values=(day, names))
     
-    print(f"total karyawan WFO : {jumlah_WFO}")
+    # print(f"total karyawan WFO : {jumlah_WFO}")
     # jadwal_Wfo_copy = copy.deepcopy(jadwal_Wfo)
     copy_jadwal()
     jadwal_Wfo.clear()
@@ -290,7 +295,7 @@ tk.Label(window, text ="Nama anak PKL (pisahkan dengan koma) : ").pack(pady=10)
 input_nama = tk.Entry(window, width=50)
 input_nama.pack()
 
-tk.Label(window, text ="prioritas (pisahkan dengan koma) : ").pack(pady=10)
+tk.Label(window, text ="Prioritas (pisahkan dengan koma) : ").pack(pady=10)
 input_anak_prioritas = tk.Entry(window, width=50)
 input_anak_prioritas.pack()
 
